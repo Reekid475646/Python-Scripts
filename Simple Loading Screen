@@ -1,0 +1,36 @@
+import time
+import sys
+
+def ultimate_loading_bar(total_steps, sleep_time):
+    bar_length = 30  
+    animation = "⣾⣽⣻⢿⡿⣟⣯⣷"  
+    colors = [
+        '\033[92m',  # Green
+        '\033[93m',  # Yellow
+        '\033[91m',  # Red
+        '\033[95m',  # Purple
+        '\033[94m',  # Blue
+    ]  
+    reset_color = '\033[0m'
+    
+    for i in range(total_steps + 1):
+        percent = int(100 * i / total_steps)
+        filled_length = int(bar_length * i / total_steps)
+        gradient_length = min(filled_length, len(colors))
+        
+        bar = ''.join([colors[j] + '█' for j in range(gradient_length)]) \
+              + '█' * (filled_length - gradient_length) \
+              + '-' * (bar_length - filled_length)
+        
+        sys.stdout.write(
+            f"\r{colors[i % len(colors)]}Loading... {reset_color}[{bar}{reset_color}] {percent}% {animation[i % len(animation)]}")
+        sys.stdout.flush()
+        time.sleep(sleep_time)
+    
+    print(f"\n{colors[-1]}Loading complete!{reset_color}")
+
+
+total_steps = 100
+sleep_time = 0.05  
+
+ultimate_loading_bar(total_steps, sleep_time)
