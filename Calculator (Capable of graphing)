@@ -1,0 +1,122 @@
+import tkinter as tk
+from tkinter import messagebox
+import math
+import matplotlib.pyplot as plt
+import numpy as np
+
+def evaluate_expression():
+    try:
+        expression = entry.get()
+        result = eval(expression, {"__builtins__": None}, math.__dict__)
+        entry.delete(0, tk.END)
+        entry.insert(tk.END, str(result))
+    except Exception as e:
+        messagebox.showerror("Error", "Invalid expression")
+
+
+def on_button_click(button_text):
+    if button_text == "C":
+        entry.delete(0, tk.END)
+    elif button_text == "=":
+        evaluate_expression()
+    elif button_text == "Graph":
+        open_graph_window() 
+    else:
+        entry.insert(tk.END, button_text)
+
+
+def plot_graph(expression, graph_window):
+    try:
+
+        functions = expression.split(',')
+        x_vals = np.linspace(-10, 10, 400)
+
+
+        for func in functions:
+            func = func.strip()
+            
+
+            if func.startswith("y="):
+                func = func[2:].strip()
+            
+
+            y_vals = [eval(func.replace("x", str(x)), {"__builtins__": None}, math.__dict__) for x in x_vals]
+            
+
+            plt.plot(x_vals, y_vals, label=func)
+
+
+        plt.title(f"Graphs of {expression}")
+        plt.xlabel("x")
+        plt.ylabel("f(x)")
+        plt.grid(True)
+        plt.axhline(0, color='black', linewidth=1)
+        plt.axvline(0, color='black', linewidth=1)
+        plt.legend()
+        plt.show()
+    except Exception as e:
+        messagebox.showerror("Error", "Invalid function(s) for graphing")
+
+def open_graph_window():
+    graph_window = tk.Toplevel(root)  # Create a new window
+    graph_window.title("Graphing Page")
+    graph_window.configure(bg=bg_color)
+
+    graph_label = tk.Label(graph_window, text="Enter functions (e.g., y=x**2, y=sin(x)):", font=('Arial', 16), bg=bg_color, fg=fg_color)
+    graph_label.pack(pady=10)
+    
+    graph_entry = tk.Entry(graph_window, width=50, font=('Arial', 16), bg=entry_bg, fg=fg_color)
+    graph_entry.pack(pady=10)
+
+    def on_graph_button_click():
+        expression = graph_entry.get()
+        plot_graph(expression, graph_window)
+
+    graph_button = tk.Button(graph_window, text="Plot Graph", font=('Arial', 16), bg=fg_color, fg="black",
+                             activebackground=button_hover_color, command=on_graph_button_click)
+    graph_button.pack(pady=20)
+
+
+root = tk.Tk()
+root.title("Modern Gold Calculator")
+
+
+bg_color = "#1e1e1e"  # Dark background
+fg_color = "#d4af37"  # Gold text and buttons
+entry_bg = "#333333"  # Entry box background
+button_hover_color = "#bf9b30"  # Lighter gold for hover effect
+
+root.configure(bg=bg_color)
+
+
+entry = tk.Entry(root, width=18, font=('Arial', 24), borderwidth=2, relief=tk.SUNKEN, bg=entry_bg, fg=fg_color)
+entry.grid(row=0, column=0, columnspan=5, pady=10)
+
+buttons = [
+    '7', '8', '9', '/',
+    '4', '5', '6', '*',
+    '1', '2', '3', '-',
+    'C', '0', '=', '+',
+    'sqrt', 'sin', 'cos', 'tan',
+    'log', 'pi', '(', ')',
+    'Graph'  
+]
+
+
+for i, button_text in enumerate(buttons):
+    button = tk.Button(root, text=button_text, width=5, height=2, font=('Arial', 18), bg=fg_color, fg="black",
+                       activebackground=button_hover_color,
+                       command=lambda text=button_text: on_button_click(text))
+    button.grid(row=(i // 4) + 1, column=i % 4, padx=5, pady=5)
+
+
+root.mainloop()
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Needed librarys:
+
+pip install matplotlib
+
+pip install numpy
